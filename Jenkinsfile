@@ -45,6 +45,9 @@ pipeline {
                 script {
                     // Génère la Javadoc
                     sh 'mvn -f pom.xml javadoc:javadoc'
+                    
+                    // Archive la Javadoc en tant qu'artefact
+                    archiveArtifacts artifacts: '**/target/apidocs/**/*', fingerprint: true
                 }
             }
         }
@@ -54,6 +57,11 @@ pipeline {
         always {
             // Archiver les artefacts même en cas d'échec
             archiveArtifacts artifacts: '**', fingerprint: true
+        }
+    
+        success {
+            // Publier le rapport de test en cas de succès
+            junit '**/target/surefire-reports/TEST-*.xml'
         }
     }
 }
