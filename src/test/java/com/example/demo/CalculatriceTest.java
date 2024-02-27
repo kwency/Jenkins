@@ -3,6 +3,8 @@ package com.example.demo;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import com.example.demo.Calculatrice; // Assurez-vous que le chemin d'importation est correct
+
 public class CalculatriceTest {
 
     @Test
