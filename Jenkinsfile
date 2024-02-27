@@ -45,9 +45,6 @@ pipeline {
                 script {
                     // Génère la Javadoc
                     sh 'mvn -f pom.xml javadoc:javadoc'
-                    
-                    // Archive la Javadoc en tant qu'artefact
-                    archiveArtifacts artifacts: '**/target/apidocs/**/*', fingerprint: true
                 }
             }
         }
