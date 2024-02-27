@@ -59,9 +59,9 @@ pipeline {
             archiveArtifacts artifacts: '**', fingerprint: true
         }
     
-        success {
-            // Publier le rapport de test en cas de succès
-            junit '**/target/surefire-reports/TEST-*.xml'
-        }
+        // success {
+        //     // Publier le rapport de test en cas de succès
+        //     junit '**/target/surefire-reports/TEST-*.xml'
+        // }
     }
 }
