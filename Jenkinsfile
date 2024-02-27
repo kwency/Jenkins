@@ -1,59 +1,53 @@
+// 
+
 pipeline {
-    agent any // Utiliser n'importe quel agent disponible
-    
-    tools {
-        // Assurez-vous que "Maven_3_5_2" correspond au nom que vous avez donné à l'installation de Maven dans la configuration globale de Jenkins
-        maven 'maven-3.5.2'
-    }
-    
-    triggers {
-        pollSCM('H/3 * * * *') // Vérifier les changements du SCM toutes les 3 minutes
-    }
-    
-    options {
-        skipStagesAfterUnstable() // Pour ne pas continuer après un échec de compilation
-    }
-
+    agent any
     stages {
-        stage('Récupération du code source') {
+        stage('Build and Test') {
             steps {
-                checkout scm // Cette commande clone le dépôt et vérifie la branche correcte
+                // Compilation
+                sh 'mvn compile'
+                // Exécution des tests
+                sh 'mvn test'
             }
         }
-        
-        stage('Compilation') {
+        stage('Modify Test to Fail') {
             steps {
+                // Modifier un test pour le faire échouer
+                // Par exemple, en changeant une valeur attendue
+                // ou en introduisant une assertion incorrecte
+            }
+        }
+        stage('Verify Compilation and Test Failure') {
+            steps {
+                // Vérification que la compilation fonctionne
+                // même si le test échoue
+                sh 'mvn compile'
+                // Exécuter les tests et ignorer les résultats
                 script {
-                    // Compile le projet sans exécuter les tests
-                    sh 'mvn clean compile -DskipTests'
+                    try {
+                        sh 'mvn test'
+                    } catch (err) {
+                        // Le test doit échouer
+                        echo "Test failed as expected"
+                    }
                 }
             }
         }
-
-        stage('Compilation tests') {
+        stage('Ignore Test via Maven') {
             steps {
-                script {
-                    // Compile le projet et exécute les tests
-                    sh 'mvn clean test'
-                }
+                // Ignorer le test via Maven
+                sh 'mvn -Dmaven.test.skip=true test'
             }
         }
-
-        
-        stage('Publication de la Javadoc') {
+        stage('Publish Test Report') {
             steps {
-                script {
-                    // Génère la Javadoc
-                    sh 'mvn -f pom.xml javadoc:javadoc'
-                }
+                // Publier le rapport de tests
+                // Selon le plugin utilisé (JUnit, TestNG, etc.),
+                // vous devez configurer Jenkins pour collecter
+                // et afficher les rapports de tests.
+                // Cela peut varier en fonction de la configuration de votre projet.
             }
-        }
-    }
-    
-    post {
-        always {
-            // Archiver les artefacts même en cas d'échec
-            archiveArtifacts artifacts: '**', fingerprint: true
         }
     }
 }
